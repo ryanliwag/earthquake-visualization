@@ -3,12 +3,14 @@ import * as d3 from "d3";
 import "./DensityPlot.css";
 
 const DensityPlot = ({ width, height, margin, currentDate, data }) => {
-  const wrapperRef = React.useRef();
-  const context = React.useRef(null);
-  const simulation = React.useRef(null);
+  const canvasRef = React.useRef(false);
+  const simulation_ = React.useRef();
+  const [ctx, setCtx] = React.useState()
+  const ctx_ = React.useRef()
+
   let previousDate = React.useRef(-Infinity)
   const [nodes, setNodes] = React.useState([])
-  //   const [simulation, setSimulation] = React.useState(false)
+    const [simulation, setSimulation] = React.useState(false)
 
   let alpha_decay = 0;
   let velocity_decay = 0.2;
@@ -18,25 +20,33 @@ const DensityPlot = ({ width, height, margin, currentDate, data }) => {
 
   const x = d3.scaleBand().domain(["All"]).range([0, width]).padding(1);
   const y = d3.scaleSequentialSqrt().domain([0, 500]).range([100, height]);
-  const size = d3.scaleLinear().domain([0, 4]).range([0.2, 3]);
+  const size = d3.scaleLinear().domain([0, 5]).range([3, 10]);
 
   //   let tick =0
 
   const ticked = () => {
-    console.log();
-  };
+ 
+      console.log("ticked");
+
+      ctx.clearRect(0, 0, width, height)
+      nodes.forEach(v => {
+        ctx.beginPath()
+        ctx.fillStyle = "orange"
+        ctx.arc(v.x, v.y, size(v.magnitude), 0, Math.PI * 2)
+        ctx.fill()
+      })
+    
+  }
 
   React.useEffect(() => {
-    console.log(data.filter((v) => v.date <= currentDate && v.date > previousDate.current));
-    if (!context.current) {
-      const canvas = wrapperRef.current;
-      console.log(canvas);
-      context.current = canvas.getContext("2d");
+    // create canvas current
 
-      simulation.current = d3.forceSimulation();
-      simulation.current.nodes(data);
-      simulation.current
-        .force("x", d3.forceX((d) => x("All")).strength(0.01))
+      console.log("simulation")
+      
+      setCtx(canvasRef.current.getContext('2d'))
+      simulation_.current = d3.forceSimulation();
+
+      simulation_.current.force("x", d3.forceX((d) => x("All")).strength(0.01))
         .force(
           "y",
           d3
@@ -51,23 +61,37 @@ const DensityPlot = ({ width, height, margin, currentDate, data }) => {
           })
         )
         .force("charge", d3.forceManyBody().strength(-0.1))
-        .alphaDecay(0)
+        .alphaDecay(alpha_decay)
         .velocityDecay(velocity_decay)
-        .on("tick", ticked);
-    }
+        .on('tick', ticked)
+
+    
+
+  }, [])
+
+
+  React.useEffect(() => {
+    console.log(data.filter((v) => v.date <= currentDate && v.date > previousDate.current));
 
     //  update nodes
 
+    if (simulation) {
+      setNodes([...nodes, ...data.filter((v) => v.date <= currentDate && v.date > previousDate.current)])
+      simulation_.current.nodes(nodes)
+    }
     previousDate.current = currentDate
   }, [currentDate]);
 
   return (
-    <canvas
-      id={"density-plot"}
-      ref={wrapperRef}
-      width={width}
-      height={height}
-    ></canvas>
+    <div style={{ backgroundColor: "gray" }}>
+
+      <canvas
+        id={"density-plot"}
+        ref={canvasRef}
+        width={width}
+        height={height}
+      ></canvas>
+    </div>
   );
 };
 

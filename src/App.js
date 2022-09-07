@@ -11,11 +11,8 @@ import DensityPlot from "./Visualizations/DensityPlot";
 import Slider from "react-rangeslider";
 
 function App() {
-  let geoJsonData = React.useRef(false);
-  let phlVolcData = React.useRef(false);
-  let dateList = React.useRef([]);
 
-  const [dataState, setDataState] = React.useState(false);
+  const [dataState, setDataState] = React.useState({ "phlVolcData": false, "geoJsonData": false, "state": false, "dateList": [] });
   const [sliderState, setSliderState] = React.useState(0);
 
   const [pause, setPause] = React.useState(true);
@@ -25,25 +22,26 @@ function App() {
     console.log("react is running");
     const getData = async () => {
       Promise.all([d3.csv(data), d3.json(phGeoJsonData)]).then((result) => {
-        // Geo Data (create d3 projection)
-        geoJsonData.current = result[1];
 
         // Volcanic Data
         let projection = d3.geoMercator().fitSize([780, 980], result[1]);
 
-        phlVolcData.current = result[0]
-          .map((d) => {
-            let t = projection([parseFloat(d.long), parseFloat(d.lat)]);
-            return { ...d, x: t[0], y: t[1], date: parseDate(d.date) };
-          })
-          .sort((a, b) => a.date - b.date);
+        setDataState({
+          "phlVolcData": result[0]
+            .map((d) => {
+              let t = projection([parseFloat(d.long), parseFloat(d.lat)]);
+              return { ...d, x: t[0], y: t[1], date: parseDate(d.date) };
+            })
+            .sort((a, b) => a.date - b.date),
+          "geoJsonData": result[1],
+          "state": true,
+          "dateList": generateDateList(
+            new Date(2021, 0, 1),
+            new Date(2021, 11, 31)
+          )
 
-        dateList.current = generateDateList(
-          new Date(2021, 0, 1),
-          new Date(2021, 11, 31)
-        );
+        })
 
-        setDataState(true);
       });
     };
 
@@ -52,8 +50,7 @@ function App() {
 
   const counter = () => {
     var countdown = setInterval(() => {
-      console.log(sliderState, dateList.current.length, dateList.length);
-      if (sliderState >= dateList.current.length - 1) {
+      if (sliderState >= dataState.dateList.length - 1) {
         console.log("being called");
         setSliderState(0);
         setPause(true);
@@ -107,7 +104,7 @@ function App() {
       <div className="slider">
         <Slider
           min={0}
-          max={dateList.current.length}
+          max={dataState.dateList.length}
           value={sliderState}
           onChange={handleSliderChange}
         />
@@ -115,24 +112,24 @@ function App() {
       <button onClick={() => resumeCounter()}> Resume</button>
       <button onClick={pauseCounter}>Pause</button>
 
-      {dataState && dateList.current[sliderState].toDateString()}
-      {dataState && (
+      {dataState.state && dataState.dateList[sliderState].toDateString()}
+      {dataState.state && (
         <div className={"charts"}>
           <DensityPlot
             width={800}
             height={1000}
             margin={{ top: 10, left: 10, right: 10, bottom: 10 }}
-            data={phlVolcData.current}
-            currentDate={dateList.current[sliderState]}
+            data={dataState.phlVolcData}
+            currentDate={dataState.dateList[sliderState]}
           />
-          <PhMap
+          {/* <PhMap
             width={800}
             height={1000}
             margin={{ top: 10, left: 10, right: 10, bottom: 10 }}
             data={phlVolcData.current}
             currentDate={dateList.current[sliderState]}
             geojson={geoJsonData.current}
-          />
+          /> */}
         </div>
       )}
     </div>
