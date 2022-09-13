@@ -10,7 +10,7 @@ const DataArea = ({ date, data }) => {
 function App() {
 
   return (
-    <div style={{display:"flex", justifyContent:"center", alignItems:"center"}}>
+    <div className="App">
       <Visualizations />
     </div>
   );

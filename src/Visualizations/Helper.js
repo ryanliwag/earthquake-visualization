@@ -88,10 +88,10 @@ export const drawCircles = (
     val.depth <= depthRange[1]
   ) {
     context.fillStyle = "white";
-    context.arc(val.x, val.y, size_f(val.magnitude) + 2, 0, Math.PI * 2);
-  } else {
-    context.fillStyle = "gray";
     context.arc(val.x, val.y, size_f(val.magnitude) + 1, 0, Math.PI * 2);
+  } else {
+    context.fillStyle = "#b4acb1";
+    context.arc(val.x, val.y, size_f(val.magnitude) + 0.5, 0, Math.PI * 2);
   }
 
   context.fill();
@@ -104,11 +104,12 @@ export const drawCircles = (
     val.depth <= depthRange[1]
   ) {
     context.globalAlpha = 1;
+    context.fillStyle = color_f(val.depth);
   } else {
-    context.globalAlpha = 0.5;
+    context.globalAlpha = 0.1;
+    context.fillStyle = "gray";
   }
 
-  context.fillStyle = color_f(val.depth);
 
   context.arc(val.x, val.y, size_f(val.magnitude), 0, Math.PI * 2);
   context.fill();
@@ -162,7 +163,7 @@ export const calculateD3Parameters = ({ width, height, margin }) => {
   };
 };
 
-export  const legendCircle = (context) => {
+export const legendCircle = (context) => {
   let scale,
     tickValues,
     tickFormat = (d) => d,

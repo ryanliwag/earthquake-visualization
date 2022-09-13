@@ -245,7 +245,7 @@ const Visualizations = () => {
         // Volcanic Data
         let projection = d3
           .geoMercator()
-          .fitSize([innerWidth_map-100, innerHeight-100], result[1]);
+          .fitSize([innerWidth_map - 100, innerHeight - 100], result[1]);
 
         setDataState({
           phlVolcData: result[0]
@@ -286,6 +286,19 @@ const Visualizations = () => {
 
     getData();
   }, []);
+
+  const checkConditions = (magnitude, depth) => {
+    if (
+      magnitude > magRange.current[0] &&
+      magnitude <= magRange.current[1] &&
+      depth > depthRange.current[0] &&
+      depth <= depthRange.current[1]
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  };
 
   function join(t, a, s) {
     function format(m) {
@@ -349,38 +362,24 @@ const Visualizations = () => {
     dots.current
       .filter((d) => d.date <= date.current.currentDate)
       .transition()
-      .duration(500)
-      .attr("fill", (d) => color_scale(d.depth))
+      .duration(300)
+      .attr("fill", (d) => {
+        return checkConditions(d.magnitude, d.depth)
+          ? color_scale(d.depth)
+          : "gray";
+      })
       .attr("stroke", (d) => {
-        if (
-          d.magnitude > magRange.current[0] &&
-          d.magnitude <= magRange.current[1] &&
-          d.depth > depthRange.current[0] &&
-          d.depth <= depthRange.current[1]
-        ) {
-          return "white";
-        } else {
-          return "#b4acb1";
-        }
+        return checkConditions(d.magnitude, d.depth) ? "white" : "#b4acb1";
       })
       .attr("opacity", (d) => {
-        if (
-          d.magnitude > magRange.current[0] &&
-          d.magnitude <= magRange.current[1] &&
-          d.depth > depthRange.current[0] &&
-          d.depth <= depthRange.current[1]
-        ) {
-          return 0.9;
-        } else {
-          return 0.2;
-        }
+        return checkConditions(d.magnitude, d.depth) ? 0.8 : 0.1;
       })
       .attr("stroke-width", "2px")
       .attr("r", (d) => size(d.magnitude));
-  }, 200);
+  }, 300);
 
   return (
-    <div className="App">
+    <div className="Visualization">
       <div ref={VisualizationContainerRef} className="Visualization-Container">
         <div className="InfoPanel">
           <div>
@@ -427,12 +426,12 @@ const Visualizations = () => {
           <g
             className={"points"}
             transform={`translate(${inner_map_offset + margin.left}, ${
-              margin.top+50
+              margin.top + 50
             })`}
           ></g>
           <g
             transform={`translate(${inner_map_offset + margin.left}, ${
-              margin.top+50
+              margin.top + 50
             })`}
           >
             {dataState.geoJsonData &&
