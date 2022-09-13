@@ -53,15 +53,13 @@ const Visualizations = () => {
   //     .text(defaultValue.map(format('.2%')).join('-'));
 
   // Settings
-  const width = 500;
   const height = 1000;
 
   const width_map = 600;
-  const width_plot = 500;
+  const width_plot = 600;
 
   const margin = { top: 50, left: 50, right: 50, bottom: 50 };
   const innerHeight = height - margin.top - margin.bottom;
-  const innerWidth = width - margin.left - margin.right;
   const innerWidth_map = width_map - margin.left - margin.right;
   const innerWidth_plot = width_plot - margin.left - margin.right;
   const inner_map_offset = 50;
@@ -71,7 +69,7 @@ const Visualizations = () => {
   const velocity_decay = 0.3;
 
   // D3 calculations
-  const x = d3.scaleBand().domain(["All"]).range([0, width]).padding(1);
+  const x = d3.scaleBand().domain(["All"]).range([0, width_map]).padding(1);
   const y = d3
     .scaleSequentialSqrt()
     .domain([0, 400])
@@ -199,7 +197,7 @@ const Visualizations = () => {
 
   const ticked = () => {
     if (ctx_.current) {
-      ctx_.current.clearRect(0, 0, width, height);
+      ctx_.current.clearRect(0, 0, width_map, height);
       nodes.current.forEach((v) => {
         drawCircles(
           ctx_.current,
@@ -215,7 +213,7 @@ const Visualizations = () => {
         y,
         margin.left,
         [margin.top, innerHeight],
-        innerWidth
+        innerWidth_plot
       );
     }
   };
@@ -247,7 +245,7 @@ const Visualizations = () => {
         // Volcanic Data
         let projection = d3
           .geoMercator()
-          .fitSize([innerWidth_plot, innerHeight], result[1]);
+          .fitSize([innerWidth_map-100, innerHeight-100], result[1]);
 
         setDataState({
           phlVolcData: result[0]
@@ -399,8 +397,8 @@ const Visualizations = () => {
             Philvolcs, the philippines experiences an average of 20 earthquakes
             a day and 100 to 150 are felt per year.
           </p>
-          <p className={"sources"}>
-            Sources
+          <div className={"sources"}>
+            <p>Sources</p>
             <ul>
               <li>
                 <a
@@ -422,19 +420,19 @@ const Visualizations = () => {
                 </a>
               </li>
             </ul>
-          </p>
+          </div>
         </div>
         <div className="border"></div>
         <svg id={"phmap"} ref={wrapperRef} width={width_map} height={height}>
           <g
             className={"points"}
             transform={`translate(${inner_map_offset + margin.left}, ${
-              margin.top
+              margin.top+50
             })`}
           ></g>
           <g
             transform={`translate(${inner_map_offset + margin.left}, ${
-              margin.top
+              margin.top+50
             })`}
           >
             {dataState.geoJsonData &&
