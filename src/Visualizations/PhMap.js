@@ -1,15 +1,14 @@
 import React from "react";
 import * as d3 from "d3";
 import "./PhMap.css";
-const PhMap = ({ width, height, margin, currentDate, geojson, data }) => {
-
-  console.log("phmap running", currentDate)
+const PhMap = ({ width, height, margin, geojson, data, date }) => {
+  console.log("phmap running", date);
   const wrapperRef = React.useRef();
 
   // calculate margins and heights
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
-  let previousDate = React.useRef(-Infinity)
+  let previousDate = React.useRef(-Infinity);
 
   const geoGenerator = React.useMemo(() => {
     console.log("are we running");
@@ -33,7 +32,7 @@ const PhMap = ({ width, height, margin, currentDate, geojson, data }) => {
     .domain(d3.extent(data.map((v) => parseFloat(v.long))))
     .range([margin.top, height - margin.top - margin.bottom]);
 
-  const rScale = d3.scaleLinear().domain([0, 5]).range([2,10])
+  const rScale = d3.scaleLinear().domain([0, 5]).range([2, 30]);
 
   const yAxis = (g) =>
     g
@@ -44,57 +43,62 @@ const PhMap = ({ width, height, margin, currentDate, geojson, data }) => {
           .ticks(10)
       )
       .call((g) => g.select(".domain").remove())
-      .call(g => g.append('text')
-      .attr('x', 35)
-      .attr('y', margin.top)
-      .attr('font-weight', 'bold')
-      .attr('font-size', "0.87rem")
-      .attr("stroke-width", 1)
-      .attr('fill', 'currentColor')
-      .attr('text-anchor', 'end')
-      .text('Latitude'))
+      .call((g) =>
+        g
+          .append("text")
+          .attr("x", 35)
+          .attr("y", margin.top)
+          .attr("font-weight", "bold")
+          .attr("font-size", "0.87rem")
+          .attr("stroke-width", 1)
+          .attr("fill", "currentColor")
+          .attr("text-anchor", "end")
+          .text("Latitude")
+      );
 
-  wrapperElement.append('g').attr("transform", `translate(${50}, ${margin.top})`).call(yAxis)
-
+  wrapperElement
+    .append("g")
+    .attr("transform", `translate(${50}, ${margin.top})`)
+    .call(yAxis);
 
   const dot = wrapperElement
     .selectAll("circle")
     .data(data)
     .join("circle")
     .attr("transform", (d) => `translate(${d.x}, ${d.y})`)
-    .attr("opacity", 0.6);
+    .attr("opacity", 1);
 
   React.useEffect(() => {
+    console.log(date);
     dot
-      .filter((d) => d.date > previousDate.current && d.date <= currentDate)
+      .filter((d) => d.date > date.previousDate && d.date <= date.currentDate)
       .transition()
-      .duration(200)
-      .attr("fill", "blue")
+      .duration(1000)
+      .attr("fill", "orange")
       .attr("stroke", "white")
-      .attr("stroke-width", "2px")
-      .attr("r", d => rScale(d.magnitude))
+      .attr("stroke-width", "3px")
+      .attr("r", (d) => rScale(d.magnitude))
       .transition()
       .delay(300)
-      .duration(300)
-      .attr("stroke-width", "1px")
+      .duration(500)
+      // .attr("stroke", "#000")
+      .attr("stroke-width", "0.2px")
       .attr("fill", "red")
-      .attr("opacity", 0.2)
-      .attr("r", 4);
+      .attr("r", 5)
+      .style("opacity", 0.2)
 
     // dot // exit
-    //   .filter((d) => d.date <= previousDate)
+    //   .filter((d) => d.date <= date.currentDate)
     //   .transition()
     //   .duration(300)
     //   .attr("fill", "red")
     //   .attr("r", 4)
-    //   .attr("stroke-width", "2px");
-
-    previousDate.current = currentDate
-  }, [currentDate]);
+    //   .attr("stroke-width", "2px").remove()
+  }, [date]);
 
   const clearPoints = () => {
     dot
-      .filter((d) => d.date <= previousDate)
+      .filter((d) => d.date <= date.previousDate)
       .transition()
       .duration(1000)
       .attr("r", 0)
