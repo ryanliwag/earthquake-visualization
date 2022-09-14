@@ -4,14 +4,12 @@ import * as d3 from "d3";
 import data from "../2022_philvolcs_filtered.csv";
 import phGeoJsonData from "../phl_regions2.geojson";
 import {
-  useInterval,
   generateDateList,
   drawYaxis,
   drawCircles,
   legendCircle,
 } from "./Helper";
 import { sliderBottom } from "d3-simple-slider";
-import { color } from "d3";
 
 const Visualizations = () => {
   console.log("rerender");
@@ -22,15 +20,16 @@ const Visualizations = () => {
     state: false,
     dateList: [],
   });
-  const pause = React.useRef(false);
+  const pause = React.useRef(true);
   const [viz_size, setViz_size] = React.useState([600, 800]);
 
   // Ref Variables
+  const countInterval = React.useRef();
   const ctx_ = React.useRef();
   const nodes = React.useRef([]);
   const date = React.useRef({
     previousDate: -Infinity,
-    currentDate: null,
+    currentDate: new Date(2022, 0, 1),
   });
   const sliderState = React.useRef(0);
   const VisualizationContainerRef = React.useRef();
@@ -102,6 +101,7 @@ const Visualizations = () => {
     .default([0, 400])
     .on("onchange", (val) => {
       depthRange.current = val;
+      rerender_dots();
     });
 
   const magslider = sliderBottom()
@@ -112,6 +112,7 @@ const Visualizations = () => {
     .default([3, 7])
     .on("onchange", (val) => {
       magRange.current = val;
+      rerender_dots();
     });
 
   // Color Legend
@@ -280,7 +281,8 @@ const Visualizations = () => {
           VisualizationContainerRef.current.clientWidth,
           VisualizationContainerRef.current.clientHeight,
         ]);
-        // load data
+        // Unpause Interval Animation
+        pause.current = false;
       });
     };
 
@@ -315,17 +317,44 @@ const Visualizations = () => {
       .join("circle")
       .attr("opacity", 0.8)
       .attr("transform", (d) => `translate(${d.x_map}, ${d.y_map})`);
+
+    if (dataState.phlVolcData) {
+      console.log("starting tick interval");
+      countInterval.current = setInterval(function () {
+        intervaltick();
+      }, 300);
+    }
   }, [dataState]);
 
-  useInterval(() => {
-    if (!pause.current) {
-      console.log("still increasing");
-      sliderState.current = sliderState.current + 1;
+  const rerender_dots = () => {
+    dots.current
+      .filter((d) => d.date <= date.current.currentDate)
+      .transition()
+      .duration(300)
+      .attr("fill", (d) => {
+        return checkConditions(d.magnitude, d.depth)
+          ? color_scale(d.depth)
+          : "gray";
+      })
+      .attr("stroke", (d) => {
+        return checkConditions(d.magnitude, d.depth) ? "white" : "#b4acb1";
+      })
+      .attr("opacity", (d) => {
+        return checkConditions(d.magnitude, d.depth) ? 0.8 : 0.1;
+      })
+      .attr("stroke-width", "2px")
+      .attr("r", (d) => size(d.magnitude));
+  };
 
+  const intervaltick = () => {
+    console.log("still increasing", pause.current, dataState);
+    if (!pause.current && dataState.phlVolcData) {
       date.current = {
         previousDate: date.current.currentDate,
         currentDate: dataState.dateList[sliderState.current],
       };
+      sliderState.current = sliderState.current + 1;
+
       nodes.current = [
         ...nodes.current,
         ...dataState.phlVolcData.filter(
@@ -350,33 +379,18 @@ const Visualizations = () => {
       simulation.nodes(nodes.current);
     }
     if (sliderState.current >= dataState.dateList.length) {
-      console.log("state finished");
+      console.log("state finished", date.current);
       date.current = {
         ...date.current,
         currentDate: new Date(2022, 7, 31),
       };
-      console.log(date.current.currentDate);
       pause.current = true;
       simulation.alphaDecay(0.002);
+      clearInterval(countInterval.current);
     }
-    dots.current
-      .filter((d) => d.date <= date.current.currentDate)
-      .transition()
-      .duration(300)
-      .attr("fill", (d) => {
-        return checkConditions(d.magnitude, d.depth)
-          ? color_scale(d.depth)
-          : "gray";
-      })
-      .attr("stroke", (d) => {
-        return checkConditions(d.magnitude, d.depth) ? "white" : "#b4acb1";
-      })
-      .attr("opacity", (d) => {
-        return checkConditions(d.magnitude, d.depth) ? 0.8 : 0.1;
-      })
-      .attr("stroke-width", "2px")
-      .attr("r", (d) => size(d.magnitude));
-  }, 300);
+
+    rerender_dots();  
+  };
 
   return (
     <div className="Visualization">

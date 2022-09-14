@@ -4,12 +4,10 @@ import * as d3 from "d3";
 export const useInterval = (callback, delay) => {
   const savedCallback = React.useRef();
 
-  // Remember the latest function.
   React.useEffect(() => {
     savedCallback.current = callback;
   }, [callback]);
 
-  // Set up the interval.
   React.useEffect(() => {
     function tick() {
       savedCallback.current();
