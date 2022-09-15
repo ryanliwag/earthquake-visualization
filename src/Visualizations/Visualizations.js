@@ -12,7 +12,6 @@ import {
 import { sliderBottom } from "d3-simple-slider";
 
 const Visualizations = () => {
-  console.log("rerender");
   // State Variables
   const [dataState, setDataState] = React.useState({
     phlVolcData: false,
@@ -319,7 +318,6 @@ const Visualizations = () => {
       .attr("transform", (d) => `translate(${d.x_map}, ${d.y_map})`);
 
     if (dataState.phlVolcData) {
-      console.log("starting tick interval");
       countInterval.current = setInterval(function () {
         intervaltick();
       }, 300);
@@ -347,7 +345,6 @@ const Visualizations = () => {
   };
 
   const intervaltick = () => {
-    console.log("still increasing", pause.current, dataState);
     if (!pause.current && dataState.phlVolcData) {
       date.current = {
         previousDate: date.current.currentDate,
@@ -379,7 +376,6 @@ const Visualizations = () => {
       simulation.nodes(nodes.current);
     }
     if (sliderState.current >= dataState.dateList.length) {
-      console.log("state finished", date.current);
       date.current = {
         ...date.current,
         currentDate: new Date(2022, 7, 31),
@@ -407,7 +403,7 @@ const Visualizations = () => {
           <p className={"description"}>
             Earthquakes are not uncommon in the Philippines which is located
             close to the seismically active Pacific Ring of Fire. According to
-            Philvolcs, the philippines experiences an average of 20 earthquakes
+            Phivolcs, the philippines experiences an average of 20 earthquakes
             a day and 100 to 150 are felt per year.
           </p>
           <div className={"sources"}>
@@ -429,7 +425,7 @@ const Visualizations = () => {
                     "https://www.phivolcs.dost.gov.ph/index.php/earthquake/earthquake-information3"
                   }
                 >
-                  PhilVolcs Dataset
+                  Phivolcs Dataset
                 </a>
               </li>
             </ul>
