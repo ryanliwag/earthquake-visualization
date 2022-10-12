@@ -1,18 +1,18 @@
 {
   "files": {
     "main.css": "/earthquake-visualization/static/css/main.5aacf559.css",
-    "main.js": "/earthquake-visualization/static/js/main.9b286026.js",
+    "main.js": "/earthquake-visualization/static/js/main.3d8b3c0f.js",
     "static/js/787.fdd9cb6f.chunk.js": "/earthquake-visualization/static/js/787.fdd9cb6f.chunk.js",
     "static/media/phl_regions2.geojson": "/earthquake-visualization/static/media/phl_regions2.69850851db91f79b96fb.geojson",
     "static/media/2022_philvolcs_filtered.csv": "/earthquake-visualization/static/media/2022_philvolcs_filtered.3a5e57640dbdebf5171c.csv",
     "static/media/logo.svg": "/earthquake-visualization/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
     "index.html": "/earthquake-visualization/index.html",
     "main.5aacf559.css.map": "/earthquake-visualization/static/css/main.5aacf559.css.map",
-    "main.9b286026.js.map": "/earthquake-visualization/static/js/main.9b286026.js.map",
+    "main.3d8b3c0f.js.map": "/earthquake-visualization/static/js/main.3d8b3c0f.js.map",
     "787.fdd9cb6f.chunk.js.map": "/earthquake-visualization/static/js/787.fdd9cb6f.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.5aacf559.css",
-    "static/js/main.9b286026.js"
+    "static/js/main.3d8b3c0f.js"
   ]
 }
