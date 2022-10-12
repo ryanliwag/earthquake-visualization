@@ -33,7 +33,6 @@ const Visualizations = () => {
   const sliderState = React.useRef(0);
   const VisualizationContainerRef = React.useRef();
   const densityPlotRef = React.useRef();
-  const densityPlotContainerRef = React.useRef();
 
   const depthRange = React.useRef([0, 400]);
   const magRange = React.useRef([3, 7]);
@@ -43,14 +42,7 @@ const Visualizations = () => {
   const dots = React.useRef();
   const geoGenerator = React.useRef();
 
-  const parseDate = d3.utcParse("%Y-%m-%d");
-
-  //   const p = select(div)
-  //     .append('p')
-  //     .attr('id', 'value')
-  //     .text(defaultValue.map(format('.2%')).join('-'));
-
-  // Settings
+  const parseDate = d3.utcParse("%Y-%m-%d")  // Settings
   const height = 1000;
 
   const width_map = 600;
@@ -140,7 +132,6 @@ const Visualizations = () => {
       `translate(${width_map / 2 + margin.left}, ${margin.top + 130})`
     );
 
-  const color_legend_label = color_legend.append("text").text("Depth");
 
   const color_legend_scale = color_legend
     .append("g")
@@ -187,13 +178,6 @@ const Visualizations = () => {
   depthsliderCon
     .attr("transform", `translate(${20}, ${margin.top + 130})`)
     .call(depthslider);
-
-  // contents.append("text").text("Tremors in the Philippines");
-  // contents
-  //   .append("text")
-  //   .text(
-  //     "Philippines average around 13000 earthquakes in a single year. Philippines is a country very prone to earthquake disasters as it is siesmically located within the active Pacific `Ring of Fire`. Eastern Mindanao, including Surigao del Norte, is one of the seismically active areas in the country because of the Philippine Fault and Philippine Trench, which are the main earthquake generators that can affect the area"
-  //   );
 
   const ticked = () => {
     if (ctx_.current) {
@@ -385,7 +369,7 @@ const Visualizations = () => {
       clearInterval(countInterval.current);
     }
 
-    rerender_dots();  
+    rerender_dots();
   };
 
   return (
@@ -403,8 +387,8 @@ const Visualizations = () => {
           <p className={"description"}>
             Earthquakes are not uncommon in the Philippines which is located
             close to the seismically active Pacific Ring of Fire. According to
-            Phivolcs, the philippines experiences an average of 20 earthquakes
-            a day and 100 to 150 are felt per year.
+            Phivolcs, the philippines experiences an average of 20 earthquakes a
+            day and 100 to 150 are felt per year.
           </p>
           <div className={"sources"}>
             <p>Sources</p>

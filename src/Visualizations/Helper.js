@@ -87,30 +87,20 @@ export const drawCircles = (
   ) {
     context.fillStyle = "white";
     context.arc(val.x, val.y, size_f(val.magnitude) + 1, 0, Math.PI * 2);
+    context.fill();
+    context.beginPath();
+    context.fillStyle = color_f(val.depth);
+    context.arc(val.x, val.y, size_f(val.magnitude), 0, Math.PI * 2);
+    context.fill();
   } else {
     context.fillStyle = "#b4acb1";
     context.arc(val.x, val.y, size_f(val.magnitude) + 0.5, 0, Math.PI * 2);
-  }
-
-  context.fill();
-
-  context.beginPath();
-  if (
-    val.magnitude > magRange[0] &&
-    val.magnitude <= magRange[1] &&
-    val.depth > depthRange[0] &&
-    val.depth <= depthRange[1]
-  ) {
-    context.globalAlpha = 1;
-    context.fillStyle = color_f(val.depth);
-  } else {
-    context.globalAlpha = 0.1;
+    context.fill();
+    context.beginPath();
     context.fillStyle = "gray";
+    context.arc(val.x, val.y, size_f(val.magnitude), 0, Math.PI * 2);
+    context.fill();
   }
-
-
-  context.arc(val.x, val.y, size_f(val.magnitude), 0, Math.PI * 2);
-  context.fill();
 };
 
 export const calculateD3Parameters = ({ width, height, margin }) => {
